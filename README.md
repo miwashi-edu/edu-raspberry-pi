@@ -36,7 +36,7 @@ touch ./src/main.cpp
 > 1. Share our work on github
 > 2. Repeat when memorising
 >
-> The *.ignore url* is not difficult to memorise, it is very useful if you need python .gitignroe just change *C%2B%2B* (C++) to *python*.
+> The *.ignore url* is not difficult to memorise, it is very useful if you need python .gitignore just change *C%2B%2B* (C++) to *python*.
 
 ```bash
 curl -o .gitignore https://raw.githubusercontent.com/github/gitignore/main/C%2B%2B.gitignore
