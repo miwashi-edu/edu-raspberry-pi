@@ -8,16 +8,6 @@
 
 ```
 ssh [user]@localhost -p 2222
-
-# if WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!
-# vi ~/.ssh/known_hosts
-# remove key for localhost:2222
-
-cd ~
-mkdir ws
-
-# config your machine one time to use main instead for master as main branch
-git config --global init.defaultBranch main
 # ctrl-d to end session
 ```
 
