@@ -1,72 +1,8 @@
 # edu-raspberry-os
 
-> Setup raspberry docker machine
+> Hello World with cmake
 
 ## Premises
-
-### iotnet exists
-
-```bash
-docker network create --driver bridge --subnet 192.168.2.0/24 --gateway 192.168.2.1 iotnet
-```
-
-### need to remove old conatiner
-
-```bash
-docker stop rpi5-dev
-docker rm rpi5-dev
-```
-
-## Instructions
-
-```bash
-docker run -d --name rpi5-dev \
-    --network iotnet \
-    --hostname rpi5-dev \
-    -p 2222:22 \
-    -e TZ=UTC \
-    balenalib/raspberrypi5-debian:bookworm \
-    /bin/bash -c "while true; do sleep 30; done"
-```
-
-## Install c development environment
-
-```bash
-docker exec -it rpi5-dev bash -c "
-apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    gcc-arm-none-eabi \
-    libnewlib-arm-none-eabi \
-    gdb-multiarch \
-    openssh-server \
-    sudo \
-    vim \
-    nano \
-    gdb \
-    git \
-    && mkdir -p /var/run/sshd"
-```
-
-## Add dev user
-
-> Change user and password
-
-```bash
-docker exec -it rpi5-dev bash -c "
-useradd -m -s /bin/bash [user] && \
-echo '[user]:[password]' | chpasswd && \
-usermod -aG sudo [user]"
-```
-
-## Enable SSH
-
-```bash
-docker exec -it rpi5-dev bash -c "
-sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
-service ssh restart"
-```
 
 ## Login
 
@@ -80,5 +16,103 @@ ssh [user]@localhost -p 2222
 cd ~
 mkdir ws
 
+# config your machine one time to use main instead for master as main branch
+git config --global init.defaultBranch main
 # ctrl-d to end session
+```
+
+## Instructions
+
+### scaffold project
+
+```bash
+cd ~
+cd ws
+mkdir myproject
+cd myproject
+mkdir src
+mkdir include
+mkdir tests
+mkdir lib
+mkdir build
+touch CMakeLists.txt
+touch ./src/CMakeLists.txt
+touch ./src/main.cpp
+```
+
+### Set up git
+
+> We use git to
+> 1. Share our work on github
+> 2. Repeat when memorising
+
+```bash
+curl -o .gitignore https://raw.githubusercontent.com/github/gitignore/main/C%2B%2B.gitignore
+git init
+git brand -m main # if you didn't change git to use main instead of maste
+git add .
+git commit -m "Initial Commit"
+```
+
+### CMakeLists.txt (Project Structure) !heredoc
+
+```bash
+cat > CMakeLists.txt << EOF
+cmake_minimum_required(VERSION 3.16)
+project(myproject LANGUAGES CXX)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY \${CMAKE_SOURCE_DIR}/bin)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_subdirectory(src)
+EOF
+```
+
+### src/CMakeLists.txt (Executable) !heredoc
+
+```bash
+cat > ./src/CMakeLists.txt << EOF
+add_executable(hello main.cpp)
+EOF
+```
+
+### src/main.cpp !heredoc
+
+```bash
+cat > ./src/main.cpp << EOF
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hello, World!\n";
+    return 0;
+}
+EOF
+```
+
+### Build the project
+
+```bash
+cmake -B build
+make -C build
+./bin/hello
+```
+
+### Reset to commit or delete myproject
+
+#### Delete project
+```bash
+cd ~
+cd ws
+rm -rf myproject
+```
+
+#### Reset to commit
+```bash
+cd ~
+cd ws
+cd myproject
+git reset --hard
+git clean -df
 ```
