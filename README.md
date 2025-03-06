@@ -27,6 +27,9 @@ docker rm rpi5-dev
 git config --global init.defaultBranch main
 git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
+
+git config --global --list # Global config
+#git config --list # Repository config
 ```
 
 ## Instructions
