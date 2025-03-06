@@ -37,6 +37,7 @@ touch ./src/main.cpp
 > 2. Repeat when memorising
 
 ```bash
+# This url is not difficult to memorise, it is very useful if you need python .gitignroe just change C++ C%2B%2B to python
 curl -o .gitignore https://raw.githubusercontent.com/github/gitignore/main/C%2B%2B.gitignore
 git init
 git brand -m main # if you didn't change git to use main instead of maste
@@ -106,3 +107,5 @@ cd myproject
 git reset --hard
 git clean -df
 ```
+
+### Repeat until dead or know it --> scaffold project
