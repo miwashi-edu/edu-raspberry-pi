@@ -29,7 +29,7 @@ git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 git config --global github.user "your-github-username"
 
-ssh-keygen -t ed25519 -C "your-email@example.com" #Generate SSH key
+ssh-keygen -t ed25519 -C "your-email@example.com" -f ~/.ssh/id_ed25519 -N "" #Generate SSH key
 cat ~/.ssh/id_ed25519.pub #Print it on screen for copying and adding to github SSH keys.
 
 git config --global --list # Check global config
