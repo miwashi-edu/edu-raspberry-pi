@@ -19,6 +19,16 @@ docker stop rpi5-dev
 docker rm rpi5-dev
 ```
 
+### Configure git
+
+> This is one time only
+
+```bash
+git config --global init.defaultBranch main
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+```
+
 ## Instructions
 
 ```bash
