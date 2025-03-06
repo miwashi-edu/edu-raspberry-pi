@@ -1,6 +1,8 @@
 # edu-raspberry-os
 
 > Setup raspberry docker machine
+>
+> Memorising not priotized, when you don't have more important parts to memorise.
 
 ## Premises
 
