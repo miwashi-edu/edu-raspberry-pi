@@ -18,7 +18,7 @@ ssh [user]@localhost -p 2222
 ```bash
 cd ~
 cd ws
-mkdir myproject
+mkdir -p myproject
 cd myproject
 mkdir src
 mkdir include
