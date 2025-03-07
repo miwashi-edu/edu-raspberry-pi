@@ -87,9 +87,27 @@ sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd
 service ssh restart"
 ```
 
+## Setup zsh  (zeeshell) - optional
+
+> It requires you logout and login again
+> When you login next time you are asked about options, choose 2.
+
+```bash
+sudo apt update
+sudo apt install zsh -y
+chsh -s $(which zsh)
+```
+
+> Optional add [Oh My Zsh](https://ohmyz.sh) (follow instructions)
+> You need to logout first to start zsh.
+```bash
+#optional Oh My Zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+```
+
 ## Login
 
-```
+```bash
 ssh [user]@localhost -p 2222
 
 # if WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!
