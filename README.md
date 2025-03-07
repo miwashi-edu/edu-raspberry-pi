@@ -41,7 +41,7 @@ touch ./src/main.cpp
 ```bash
 curl -o .gitignore https://raw.githubusercontent.com/github/gitignore/main/C%2B%2B.gitignore
 git init
-git brand -m main # if you didn't change git to use main instead of maste
+git branch -m main # if you didn't change git to use main instead of maste
 git add .
 git commit -m "Initial Commit"
 ```
