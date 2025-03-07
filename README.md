@@ -122,3 +122,18 @@ mkdir ws
 
 # ctrl-d to end session
 ```
+
+## Generate locale
+
+> This starts a GUI where you use space to choose sv_SE as locale.
+
+```bash
+sudo locale-gen sv_SE.UTF-8
+sudo dpkg-reconfigure locales
+```
+
+## Configure vim
+
+```bash
+echo 'set nocompatible' >> ~/.vimrc
+```
