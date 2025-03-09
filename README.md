@@ -1,139 +1,105 @@
 # edu-raspberry-os
 
-> Setup raspberry docker machine
->
-> Memorising not priotized, when you don't have more important parts to memorise.
-
-## Premises
-
-### iotnet exists
-
-```bash
-docker network create --driver bridge --subnet 192.168.2.0/24 --gateway 192.168.2.1 iotnet
-```
-
-### need to remove old conatiner
-
-```bash
-docker stop rpi5-dev
-docker rm rpi5-dev
-```
-
-### Configure git
-
-> This is one time only
-
-```bash
-git config --global init.defaultBranch main
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
-git config --global github.user "your-github-username"
-
-ssh-keygen -t ed25519 -C "your-email@example.com" -f ~/.ssh/id_ed25519 -N "" #Generate SSH key
-cat ~/.ssh/id_ed25519.pub #Print it on screen for copying and adding to github SSH keys.
-
-# Test git login
-ssh -T git@github.com
-
-git config --global --list # Check global config
-#git config --list # Repository config
-```
-
 ## Instructions
 
+
+### CMakeLists.txt
+
 ```bash
-docker run -d --name rpi5-dev \
-    --network iotnet \
-    --hostname rpi5-dev \
-    -p 2222:22 \
-    -e TZ=UTC \
-    balenalib/raspberrypi5-debian:bookworm \
-    /bin/bash -c "while true; do sleep 30; done"
+cat > CMakeLists.txt << EOF
+cmake_minimum_required(VERSION 3.16)
+project(myproject LANGUAGES C)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY \${CMAKE_SOURCE_DIR}/bin)
+
+include(FetchContent)
+
+# Fetch pigpio (GPIO control library)
+FetchContent_Declare(
+    pigpio
+    GIT_REPOSITORY https://github.com/joan2937/pigpio.git
+    GIT_TAG        master
+)
+FetchContent_MakeAvailable(pigpio)
+
+add_subdirectory(src)
+
+install(TARGETS heap stack blink DESTINATION bin)
+
+# Custom clean target
+add_custom_target(clean-all
+    COMMAND rm -rf build bin
+    COMMENT "Removing all build artifacts and installed binaries"
+)
+EOF
 ```
 
-## Install c development environment
+### ./src/CmakeLists.txt
 
 ```bash
-docker exec -it rpi5-dev bash -c "
-apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    gcc-arm-none-eabi \
-    libnewlib-arm-none-eabi \
-    gdb-multiarch \
-    openssh-server \
-    sudo \
-    vim \
-    nano \
-    gdb \
-    git \
-    && mkdir -p /var/run/sshd"
+cat > src/CMakeLists.txt << EOF
+add_executable(heap heap.c)
+add_executable(stack stack.c)
+add_executable(blink blink.c)
+
+# Link pigpio
+target_link_libraries(blink PRIVATE pigpio)
+EOF
 ```
 
-## Add dev user
-
-> Change user and password
+### ./src/blink.c
 
 ```bash
-docker exec -it rpi5-dev bash -c "
-useradd -m -s /bin/bash [user] && \
-echo '[user]:[password]' | chpasswd && \
-usermod -aG sudo [user]"
+cat > src/blink.c << EOF
+#include <stdio.h>
+#include <pigpio.h>
+
+#define LED_PIN 17  // GPIO 17
+
+int main() {
+    if (gpioInitialise() < 0) {
+        fprintf(stderr, "ERROR: pigpio initialization failed!\\n");
+        return 1;
+    }
+
+    gpioSetMode(LED_PIN, PI_OUTPUT);
+    printf("INFO: Blinking LED on GPIO 17\\n");
+
+    for (int i = 0; i < 10; i++) {
+        gpioWrite(LED_PIN, 1);
+        printf("INFO: LED ON\\n");
+        gpioDelay(500000);  // 500ms
+
+        gpioWrite(LED_PIN, 0);
+        printf("INFO: LED OFF\\n");
+        gpioDelay(500000);  // 500ms
+    }
+
+    gpioTerminate();
+    printf("INFO: Blink test complete\\n");
+    return 0;
+}
+EOF
 ```
 
-## Enable SSH
+## Build it
 
 ```bash
-docker exec -it rpi5-dev bash -c "
-sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
-service ssh restart"
+rm -rf build
+cmake -S . -B build
+make -C build
+sudo make -C build install
 ```
 
-## Setup zsh  (zeeshell) - optional
-
-> It requires you logout and login again
-> When you login next time you are asked about options, choose 2.
+## Test it
 
 ```bash
-sudo apt update
-sudo apt install zsh -y
-chsh -s $(which zsh)
+sudo blink
 ```
 
-> Optional add [Oh My Zsh](https://ohmyz.sh) (follow instructions)
-> You need to logout first to start zsh.
-```bash
-#optional Oh My Zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-```
-
-## Login
+## Restart it
 
 ```bash
-ssh [user]@localhost -p 2222
-
-# if WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!
-# vi ~/.ssh/known_hosts
-# remove key for localhost:2222
-
-cd ~
-mkdir ws
-
-# ctrl-d to end session
-```
-
-## Generate locale
-
-> This starts a GUI where you use space to choose sv_SE as locale.
-
-```bash
-sudo locale-gen sv_SE.UTF-8
-sudo dpkg-reconfigure locales
-```
-
-## Configure vim
-
-```bash
-echo 'set nocompatible' >> ~/.vimrc
+git reset --hard
+git clean -df
 ```
