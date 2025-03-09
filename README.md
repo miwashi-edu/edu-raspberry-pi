@@ -11,10 +11,14 @@
 ```bash
 cat > ./src/CMakeLists.txt << EOF
 add_executable(heap heap.c)
-target_link_libraries(heap mpack)
-
 add_executable(stack stack.c)
-target_link_libraries(stack mpack)
+
+# Make sure mpack is found
+find_package(mpack REQUIRED)
+
+# Link the correct mpack target
+target_link_libraries(heap PRIVATE mpack-static)
+target_link_libraries(stack PRIVATE mpack-static)
 EOF
 ```
 
@@ -37,6 +41,7 @@ FetchContent_MakeAvailable(mpack)
 
 add_subdirectory(src)
 
+# Explicitly link mpack
 install(TARGETS heap stack DESTINATION bin)
 EOF
 ```
@@ -90,7 +95,11 @@ EOF
 ## Test it
 
 ```bash
+rm -rf build
+cmake -B build
+make -C build
 sudo make -C build install
+
 heap
 stack
 which heap
