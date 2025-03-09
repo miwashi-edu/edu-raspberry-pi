@@ -98,3 +98,10 @@ stack
 which heap
 which stack
 ```
+
+## Restart it
+
+```bash
+git reset --hard
+git clean -df
+```
