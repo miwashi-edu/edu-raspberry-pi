@@ -31,7 +31,7 @@ include(FetchContent)
 FetchContent_Declare(
     mpack
     GIT_REPOSITORY https://github.com/ludocode/mpack.git
-    GIT_TAG        v1.0.5
+    GIT_TAG        v1.1
 )
 FetchContent_MakeAvailable(mpack)
 
