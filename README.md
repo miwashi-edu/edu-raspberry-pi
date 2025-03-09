@@ -68,7 +68,7 @@ EOF
 ### Stack
 
 ```bash
-cat > ./src/stacl.c << EOF
+cat > ./src/stack.c << EOF
 #include <stdio.h>
 
 void stackFunction() {
