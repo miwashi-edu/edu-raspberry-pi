@@ -13,12 +13,7 @@ cat > ./src/CMakeLists.txt << EOF
 add_executable(heap heap.c)
 add_executable(stack stack.c)
 
-# Make sure mpack is found
-find_package(mpack REQUIRED)
-
-# Link the correct mpack target
-target_link_libraries(heap PRIVATE mpack-static)
-target_link_libraries(stack PRIVATE mpack-static)
+install(TARGETS heap stack DESTINATION bin)
 EOF
 ```
 
@@ -31,17 +26,8 @@ project(myproject LANGUAGES C)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY \${CMAKE_SOURCE_DIR}/bin)
 
-include(FetchContent)
-FetchContent_Declare(
-    mpack
-    GIT_REPOSITORY https://github.com/ludocode/mpack.git
-    GIT_TAG        v1.1
-)
-FetchContent_MakeAvailable(mpack)
-
 add_subdirectory(src)
 
-# Explicitly link mpack
 install(TARGETS heap stack DESTINATION bin)
 EOF
 ```
@@ -56,14 +42,16 @@ cat > ./src/heap.c << EOF
 int main() {
     int *ptr = malloc(sizeof(int) * 10);
     if (!ptr) {
-        fprintf(stderr, "Heap allocation failed\\n");
+        fprintf(stderr, "ERROR: Heap allocation failed\\n");
         return 1;
     }
 
-    printf("Heap memory allocated successfully\\n");
+    printf("INFO: Heap memory allocated successfully\\n");
 
     free(ptr);
-    printf("Heap memory freed\\n");
+    printf("INFO: Heap memory freed\\n");
+
+    fprintf(stderr, "WARNING: Heap allocation test complete\\n");
 
     return 0;
 }
@@ -82,7 +70,8 @@ void stackFunction() {
         arr[i] = i;
     }
 
-    printf("Stack memory allocated and used successfully\\n");
+    printf("INFO: Stack memory allocated and used successfully\\n");
+    fprintf(stderr, "WARNING: Stack operation completed\\n");
 }
 
 int main() {
@@ -92,14 +81,18 @@ int main() {
 EOF
 ```
 
-## Test it
+## Build and install it
 
 ```bash
 rm -rf build
-cmake -B build
+cmake -S . -B build
 make -C build
 sudo make -C build install
+```
 
+## Test it
+
+```bash
 heap
 stack
 which heap
