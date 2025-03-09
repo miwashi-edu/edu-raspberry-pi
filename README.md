@@ -30,16 +30,25 @@ install(TARGETS hello1 hello2 DESTINATION bin) # Added install target
 EOF
 ```
 
-## Test it
-
-> We need sudo as we copy files to /usr/local/bin
-> The target is chained, first it runs target build, then target install
-> If build failes, install is not run
+## Build it
 
 ```bash
+cmake -B build
 sudo make -C build install
+```
+
+## Test it
+
+```bash
 hello1
 hello2
 which hello1
 which hello2
+```
+
+## Restart it
+
+```bash
+git reset --hard
+git clean -df
 ```
