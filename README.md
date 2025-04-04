@@ -48,6 +48,8 @@ git commit -m "Initial Commit"
 
 ### CMakeLists.txt (Project Structure) !heredoc
 
+> OBS if you write the code, remove the backslas from \${CMAKE_SOURCE_DIR}/bin)
+
 ```bash
 cat > CMakeLists.txt << EOF
 cmake_minimum_required(VERSION 3.16)
